@@ -15,8 +15,12 @@ class TestPlotSpectra(unittest.TestCase):
 
     def test_plot_spectra(self):
 
-        test_plot = plot_spectra(
-            spectra=self.spectra
-        )
+        test_plot = plot_spectra(spectra=self.spectra)
+
+        assert isinstance(test_plot, type(matplotlib.pyplot))
+
+    def test_plot_spectra_with_error(self):
+
+        test_plot = plot_spectra(spectra=self.spectra_with_error)
 
         assert isinstance(test_plot, type(matplotlib.pyplot))
