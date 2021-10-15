@@ -29,6 +29,10 @@ jobs:
         run: |
           python setup.py install
 
+      - name: install packages for tests
+        run: |
+          pip install -r requirements-test.txt 
+
       - name: Run test_utils
         run: |
           pytest tests/ -v --cov=spectrum_plotter --cov-append --cov-report term --cov-report xml
