@@ -56,6 +56,8 @@ def plot_spectrum(
             if len(value) == 3:
                 y_err = np.array(y_err)
 
+        plt.figure(1)
+
         plt.xlabel(x_label)
         plt.ylabel(y_label)
 
@@ -75,8 +77,6 @@ def plot_spectrum(
     plt.title(title)
     if filename:
         plt.savefig(filename, bbox_inches="tight", dpi=400)
-
-    plt.close()
 
     return plt
 
@@ -129,6 +129,7 @@ def plot_spectra(
         if len(spectra) == 3:
             y_err = np.array(y_err)
 
+    plt.figure(0)
     plt.xlabel(x_label)
     plt.ylabel(y_label)
 
@@ -147,7 +148,5 @@ def plot_spectra(
 
     if filename:
         plt.savefig(filename, bbox_inches="tight", dpi=400)
-
-    plt.close()
 
     return plt

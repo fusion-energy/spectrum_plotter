@@ -1,5 +1,5 @@
 import unittest
-from spectrum_plotter.core import plot_spectra
+from spectrum_plotter import plot_spectra
 import numpy as np
 import matplotlib
 
