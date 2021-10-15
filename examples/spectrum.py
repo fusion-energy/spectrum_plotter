@@ -13,6 +13,13 @@ spectrum_with_error = {
     "test plot 2": (x2, y2, y_err2),
 }
 
-test_plot = plot_spectrum(spectrum=spectrum_with_error)
+test_plot = plot_spectrum(
+    spectrum=spectrum_with_error,
+    x_label="Energy [MeV]",
+    y_label="Flux [n/cm^2s]",
+    x_scale="linear",
+    y_scale="linear",
+    title="example plot 1",
+)
 
 test_plot.show()
