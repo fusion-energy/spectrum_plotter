@@ -1,4 +1,3 @@
-
 from spectrum_plotter import plot_spectrum
 import numpy as np
 

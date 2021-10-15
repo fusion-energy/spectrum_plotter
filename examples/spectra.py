@@ -1,4 +1,3 @@
-
 from spectrum_plotter import plot_spectra
 import numpy as np
 
@@ -13,7 +12,6 @@ test_plot = plot_spectra(
     x_scale="linear",
     y_scale="linear",
     title="example plot 1",
-
 )
 
 test_plot.show()
