@@ -1,4 +1,6 @@
 from typing import Dict, Iterable, Optional, Tuple, Union
+import plotly.graph_objects as go
+
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -16,6 +18,7 @@ def plot_spectrum(
     trim_zeros: bool = True,
     legend: bool = True,
     filename: Optional[str] = None,
+    ploting_package='matplotlib'
 ) -> plt:
     """Plots a stepped line graph with optional shaded region for Y error.
     Intended use for ploting neutron / photon spectra
@@ -41,6 +44,7 @@ def plot_spectrum(
         y_scale,
         x_scale,
         title,
+        ploting_package,
     )
 
     for key, value in spectrum.items():
@@ -65,6 +69,7 @@ def plot_spectra(
     title: Optional[str] = "",
     trim_zeros: bool = True,
     filename: Optional[str] = None,
+    ploting_package='matplotlib'
 ) -> plt:
     """Plots a stepped line graph with optional shaded region for Y error.
     Intended use for ploting neutron / photon spectra
@@ -90,6 +95,7 @@ def plot_spectra(
         y_scale,
         x_scale,
         title,
+        ploting_package,
     )
 
     add_spectra_to_matplotlib_plot(spectra=spectra, trim_zeros=trim_zeros, label=None)
@@ -106,17 +112,85 @@ def add_axis_title_labels(
     y_scale,
     x_scale,
     title,
+    ploting_package
 ):
-    plt.figure(0)
-    plt.xlabel(x_label)
-    plt.ylabel(y_label)
 
-    plt.yscale(y_scale)
-    plt.xscale(x_scale)
+    if ploting_package == 'matplotlib':
+        plt.figure(0)
+        plt.xlabel(x_label)
+        plt.ylabel(y_label)
 
-    plt.title(title)
+        plt.yscale(y_scale)
+        plt.xscale(x_scale)
 
-    return plt
+        plt.title(title)
+
+        return plt
+    elif ploting_package == 'plotly':
+        figure = go.Figure()
+
+        figure.update_layout(
+            xaxis={
+                "title": x_label,
+                # "range": (0, 14.1e6)
+            },
+            yaxis={
+                "title": y_label
+            },
+        )
+
+        # this adds the dropdown box for log and lin axis selection
+        # figure.update_layout(
+        #     updatemenus=[
+        #         go.layout.Updatemenu(
+        #             buttons=list(
+        #                 [
+        #                     dict(
+        #                         args=[
+        #                             {
+        #                                 "xaxis.type": "lin",
+        #                                 "yaxis.type": "lin",
+        #                                 "xaxis.range": (0, 14.1e6),
+        #                             }
+        #                         ],
+        #                         label="linear(x) , linear(y)",
+        #                         method="relayout",
+        #                     ),
+        #                     dict(
+        #                         args=[{"xaxis.type": "log", "yaxis.type": "log"}],
+        #                         label="log(x) , log(y)",
+        #                         method="relayout",
+        #                     ),
+        #                     dict(
+        #                         args=[{"xaxis.type": "log", "yaxis.type": "lin"}],
+        #                         label="log(x) , linear(y)",
+        #                         method="relayout",
+        #                     ),
+        #                     dict(
+        #                         args=[
+        #                             {
+        #                                 "xaxis.type": "lin",
+        #                                 "yaxis.type": "log",
+        #                                 "xaxis.range": (0, 14.1e6),
+        #                             }
+        #                         ],
+        #                         label="linear(x) , log(y)",
+        #                         method="relayout",
+        #                     ),
+        #                 ]
+        #             ),
+        #             pad={"r": 10, "t": 10},
+        #             showactive=True,
+        #             x=0.5,
+        #             xanchor="left",
+        #             y=1.1,
+        #             yanchor="top",
+        #         ),
+        #     ]
+        # )
+    else:
+        msg = f'ploting_package must be set to "matplotlib" or "plotly" not {ploting_package}'
+        raise ValueError(msg)
 
 
 def add_spectra_to_matplotlib_plot(
