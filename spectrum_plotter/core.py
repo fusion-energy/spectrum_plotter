@@ -2,7 +2,6 @@ from typing import Dict, Iterable, Optional, Tuple, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
-from _typeshed import NoneType
 from numpy import ndarray
 from numpy.lib.function_base import trim_zeros
 
@@ -36,13 +35,14 @@ def plot_spectrum(
         the matplotlib.pyplot object produced
     """
 
-    plt.figure(1)
+    plt = add_axis_title_labels(
+        x_label,
+        y_label,
+        y_scale,
+        x_scale,
+        title,
+    )
 
-    plt.xlabel(x_label)
-    plt.ylabel(y_label)
-
-    plt.yscale(y_scale)
-    plt.xscale(x_scale)
 
     for key, value in spectrum.items():
         
@@ -89,14 +89,14 @@ def plot_spectra(
         the matplotlib.pyplot object produced
     """
 
-    plt.figure(0)
-    plt.xlabel(x_label)
-    plt.ylabel(y_label)
 
-    plt.yscale(y_scale)
-    plt.xscale(x_scale)
-
-    plt.title(title)
+    plt = add_axis_title_labels(
+        x_label,
+        y_label,
+        y_scale,
+        x_scale,
+        title,
+    )
 
     add_spectra_to_matplotlib_plot(
         spectra=spectra,
@@ -109,6 +109,24 @@ def plot_spectra(
 
     return plt
 
+
+def add_axis_title_labels(
+    x_label,
+    y_label,
+    y_scale,
+    x_scale,
+    title,
+):
+    plt.figure(0)
+    plt.xlabel(x_label)
+    plt.ylabel(y_label)
+
+    plt.yscale(y_scale)
+    plt.xscale(x_scale)
+
+    plt.title(title)
+
+    return plt
 
 def add_spectra_to_matplotlib_plot(
     spectra: Tuple[ndarray, ndarray, ndarray],
@@ -127,7 +145,7 @@ def add_spectra_to_matplotlib_plot(
         x = x[:-1]
 
     if trim_zeros is True:
-        y = np.trim_zeros(np.array(y))
+        y = np.trim_zeros(np.array(y), trim='b')
         x = np.array(x[: len(y)])
         if len(spectra) == 3:
             y_err = np.array(y_err[: len(y)])
