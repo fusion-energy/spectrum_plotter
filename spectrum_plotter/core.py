@@ -34,42 +34,17 @@ def plot_spectrum(
         the matplotlib.pyplot object produced
     """
 
+    plt.figure(1)
+
+    plt.xlabel(x_label)
+    plt.ylabel(y_label)
+
+    plt.yscale(y_scale)
+    plt.xscale(x_scale)
+
     for key, value in spectrum.items():
-        x = value[0]
-        y = value[1]
-        if len(value) == 3:
-            y_err = value[2]
-
-        # trimming required for spectra energy groups which have one more energy bin
-        if len(x) == len(y) + 1:
-            x = x[:-1]
-
-        if trim_zeros is True:
-            y = np.trim_zeros(np.array(y))
-            x = np.array(x[: len(y)])
-            if len(value) == 3:
-                y_err = np.array(y_err[: len(y)])
-        else:
-            y = np.array(y)
-            x = np.array(x)
-            if len(value) == 3:
-                y_err = np.array(y_err)
-
-        plt.figure(1)
-
-        plt.xlabel(x_label)
-        plt.ylabel(y_label)
-
-        # mid and post are also options but pre is used as energy bins start from 0
-        plt.step(x, y, where="pre", label=key)
-
-        plt.yscale(y_scale)
-        plt.xscale(x_scale)
-
-        if len(value) == 3:
-            lower_y = y - y_err
-            upper_y = y + y_err
-            plt.fill_between(x, lower_y, upper_y, step="pre", color="k", alpha=0.15)
+        
+        add_spectra_to_matplotlib_plot(value, trim_zeros, label=key)
 
     if legend:
         plt.legend()
@@ -108,6 +83,26 @@ def plot_spectra(
         the matplotlib.pyplot object produced
     """
 
+    plt.figure(0)
+    plt.xlabel(x_label)
+    plt.ylabel(y_label)
+
+    plt.yscale(y_scale)
+    plt.xscale(x_scale)
+
+    plt.title(title)
+
+    add_spectra_to_matplotlib_plot(spectra, trim_zeros, None)
+
+    if filename:
+        plt.savefig(filename, bbox_inches="tight", dpi=400)
+
+    return plt
+
+
+def add_spectra_to_matplotlib_plot(spectra, trim_zeros, label):
+    # mid and post are also options but pre is used as energy bins start from 0
+
     x = spectra[0]
     y = spectra[1]
     if len(spectra) == 3:
@@ -128,24 +123,9 @@ def plot_spectra(
         if len(spectra) == 3:
             y_err = np.array(y_err)
 
-    plt.figure(0)
-    plt.xlabel(x_label)
-    plt.ylabel(y_label)
-
-    # mid and post are also options but pre is used as energy bins start from 0
-    plt.step(x, y, where="pre")
-
-    plt.yscale(y_scale)
-    plt.xscale(x_scale)
+    plt.step(x, y, where="pre", label=label)
 
     if len(spectra) == 3:
         lower_y = y - y_err
         upper_y = y + y_err
         plt.fill_between(x, lower_y, upper_y, step="pre", color="k", alpha=0.15)
-
-    plt.title(title)
-
-    if filename:
-        plt.savefig(filename, bbox_inches="tight", dpi=400)
-
-    return plt
