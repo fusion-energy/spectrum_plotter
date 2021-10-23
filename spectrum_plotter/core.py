@@ -43,14 +43,9 @@ def plot_spectrum(
         title,
     )
 
-
     for key, value in spectrum.items():
-        
-        add_spectra_to_matplotlib_plot(
-            value,
-            trim_zeros,
-            label=key
-        )
+
+        add_spectra_to_matplotlib_plot(value, trim_zeros, label=key)
 
     if legend:
         plt.legend()
@@ -89,7 +84,6 @@ def plot_spectra(
         the matplotlib.pyplot object produced
     """
 
-
     plt = add_axis_title_labels(
         x_label,
         y_label,
@@ -98,11 +92,7 @@ def plot_spectra(
         title,
     )
 
-    add_spectra_to_matplotlib_plot(
-        spectra=spectra,
-        trim_zeros=trim_zeros,
-        label=None
-    )
+    add_spectra_to_matplotlib_plot(spectra=spectra, trim_zeros=trim_zeros, label=None)
 
     if filename:
         plt.savefig(filename, bbox_inches="tight", dpi=400)
@@ -128,10 +118,9 @@ def add_axis_title_labels(
 
     return plt
 
+
 def add_spectra_to_matplotlib_plot(
-    spectra: Tuple[ndarray, ndarray, ndarray],
-    trim_zeros: bool,
-    label: Union[str, None]
+    spectra: Tuple[ndarray, ndarray, ndarray], trim_zeros: bool, label: Union[str, None]
 ):
     # mid and post are also options but pre is used as energy bins start from 0
 
@@ -145,7 +134,7 @@ def add_spectra_to_matplotlib_plot(
         x = x[:-1]
 
     if trim_zeros is True:
-        y = np.trim_zeros(np.array(y), trim='b')
+        y = np.trim_zeros(np.array(y), trim="b")
         x = np.array(x[: len(y)])
         if len(spectra) == 3:
             y_err = np.array(y_err[: len(y)])
