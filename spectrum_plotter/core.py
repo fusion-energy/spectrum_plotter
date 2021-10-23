@@ -1,19 +1,21 @@
-from typing import Dict, Iterable, Optional
+from typing import Dict, Iterable, Optional, Tuple, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
+from _typeshed import NoneType
+from numpy import ndarray
 from numpy.lib.function_base import trim_zeros
 
 
 def plot_spectrum(
-    spectrum: Dict[str, Iterable[float]],
+    spectrum: Dict[str, Tuple[ndarray, ndarray, ndarray]],
     x_label: Optional[str] = "",
     y_label: Optional[str] = "",
     x_scale: Optional[str] = "linear",
     y_scale: Optional[str] = "linear",
     title: Optional[str] = "",
-    trim_zeros: Optional[bool] = True,
-    legend: Optional[bool] = True,
+    trim_zeros: bool = True,
+    legend: bool = True,
     filename: Optional[str] = None,
 ) -> plt:
     """Plots a stepped line graph with optional shaded region for Y error.
@@ -44,7 +46,11 @@ def plot_spectrum(
 
     for key, value in spectrum.items():
         
-        add_spectra_to_matplotlib_plot(value, trim_zeros, label=key)
+        add_spectra_to_matplotlib_plot(
+            value,
+            trim_zeros,
+            label=key
+        )
 
     if legend:
         plt.legend()
@@ -56,13 +62,13 @@ def plot_spectrum(
 
 
 def plot_spectra(
-    spectra: Iterable[float],
+    spectra: Tuple[ndarray, ndarray, ndarray],
     x_label: Optional[str] = "",
     y_label: Optional[str] = "",
     x_scale: Optional[str] = "linear",
     y_scale: Optional[str] = "linear",
     title: Optional[str] = "",
-    trim_zeros: Optional[bool] = True,
+    trim_zeros: bool = True,
     filename: Optional[str] = None,
 ) -> plt:
     """Plots a stepped line graph with optional shaded region for Y error.
@@ -92,7 +98,11 @@ def plot_spectra(
 
     plt.title(title)
 
-    add_spectra_to_matplotlib_plot(spectra, trim_zeros, None)
+    add_spectra_to_matplotlib_plot(
+        spectra=spectra,
+        trim_zeros=trim_zeros,
+        label=None
+    )
 
     if filename:
         plt.savefig(filename, bbox_inches="tight", dpi=400)
@@ -100,7 +110,11 @@ def plot_spectra(
     return plt
 
 
-def add_spectra_to_matplotlib_plot(spectra, trim_zeros, label):
+def add_spectra_to_matplotlib_plot(
+    spectra: Tuple[ndarray, ndarray, ndarray],
+    trim_zeros: bool,
+    label: Union[str, None]
+):
     # mid and post are also options but pre is used as energy bins start from 0
 
     x = spectra[0]
