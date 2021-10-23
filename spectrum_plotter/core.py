@@ -1,19 +1,20 @@
-from typing import Dict, Iterable, Optional
+from typing import Dict, Iterable, Optional, Tuple, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
+from numpy import ndarray
 from numpy.lib.function_base import trim_zeros
 
 
 def plot_spectrum(
-    spectrum: Dict[str, Iterable[float]],
+    spectrum: Dict[str, Tuple[ndarray, ndarray, ndarray]],
     x_label: Optional[str] = "",
     y_label: Optional[str] = "",
     x_scale: Optional[str] = "linear",
     y_scale: Optional[str] = "linear",
     title: Optional[str] = "",
-    trim_zeros: Optional[bool] = True,
-    legend: Optional[bool] = True,
+    trim_zeros: bool = True,
+    legend: bool = True,
     filename: Optional[str] = None,
 ) -> plt:
     """Plots a stepped line graph with optional shaded region for Y error.
@@ -34,42 +35,17 @@ def plot_spectrum(
         the matplotlib.pyplot object produced
     """
 
+    plt = add_axis_title_labels(
+        x_label,
+        y_label,
+        y_scale,
+        x_scale,
+        title,
+    )
+
     for key, value in spectrum.items():
-        x = value[0]
-        y = value[1]
-        if len(value) == 3:
-            y_err = value[2]
 
-        # trimming required for spectra energy groups which have one more energy bin
-        if len(x) == len(y) + 1:
-            x = x[:-1]
-
-        if trim_zeros is True:
-            y = np.trim_zeros(np.array(y))
-            x = np.array(x[: len(y)])
-            if len(value) == 3:
-                y_err = np.array(y_err[: len(y)])
-        else:
-            y = np.array(y)
-            x = np.array(x)
-            if len(value) == 3:
-                y_err = np.array(y_err)
-
-        plt.figure(1)
-
-        plt.xlabel(x_label)
-        plt.ylabel(y_label)
-
-        # mid and post are also options but pre is used as energy bins start from 0
-        plt.step(x, y, where="pre", label=key)
-
-        plt.yscale(y_scale)
-        plt.xscale(x_scale)
-
-        if len(value) == 3:
-            lower_y = y - y_err
-            upper_y = y + y_err
-            plt.fill_between(x, lower_y, upper_y, step="pre", color="k", alpha=0.15)
+        add_spectra_to_matplotlib_plot(value, trim_zeros, label=key)
 
     if legend:
         plt.legend()
@@ -81,13 +57,13 @@ def plot_spectrum(
 
 
 def plot_spectra(
-    spectra: Iterable[float],
+    spectra: Tuple[ndarray, ndarray, ndarray],
     x_label: Optional[str] = "",
     y_label: Optional[str] = "",
     x_scale: Optional[str] = "linear",
     y_scale: Optional[str] = "linear",
     title: Optional[str] = "",
-    trim_zeros: Optional[bool] = True,
+    trim_zeros: bool = True,
     filename: Optional[str] = None,
 ) -> plt:
     """Plots a stepped line graph with optional shaded region for Y error.
@@ -108,6 +84,46 @@ def plot_spectra(
         the matplotlib.pyplot object produced
     """
 
+    plt = add_axis_title_labels(
+        x_label,
+        y_label,
+        y_scale,
+        x_scale,
+        title,
+    )
+
+    add_spectra_to_matplotlib_plot(spectra=spectra, trim_zeros=trim_zeros, label=None)
+
+    if filename:
+        plt.savefig(filename, bbox_inches="tight", dpi=400)
+
+    return plt
+
+
+def add_axis_title_labels(
+    x_label,
+    y_label,
+    y_scale,
+    x_scale,
+    title,
+):
+    plt.figure(0)
+    plt.xlabel(x_label)
+    plt.ylabel(y_label)
+
+    plt.yscale(y_scale)
+    plt.xscale(x_scale)
+
+    plt.title(title)
+
+    return plt
+
+
+def add_spectra_to_matplotlib_plot(
+    spectra: Tuple[ndarray, ndarray, ndarray], trim_zeros: bool, label: Union[str, None]
+):
+    # mid and post are also options but pre is used as energy bins start from 0
+
     x = spectra[0]
     y = spectra[1]
     if len(spectra) == 3:
@@ -118,7 +134,7 @@ def plot_spectra(
         x = x[:-1]
 
     if trim_zeros is True:
-        y = np.trim_zeros(np.array(y))
+        y = np.trim_zeros(np.array(y), trim="b")
         x = np.array(x[: len(y)])
         if len(spectra) == 3:
             y_err = np.array(y_err[: len(y)])
@@ -128,24 +144,9 @@ def plot_spectra(
         if len(spectra) == 3:
             y_err = np.array(y_err)
 
-    plt.figure(0)
-    plt.xlabel(x_label)
-    plt.ylabel(y_label)
-
-    # mid and post are also options but pre is used as energy bins start from 0
-    plt.step(x, y, where="pre")
-
-    plt.yscale(y_scale)
-    plt.xscale(x_scale)
+    plt.step(x, y, where="pre", label=label)
 
     if len(spectra) == 3:
         lower_y = y - y_err
         upper_y = y + y_err
         plt.fill_between(x, lower_y, upper_y, step="pre", color="k", alpha=0.15)
-
-    plt.title(title)
-
-    if filename:
-        plt.savefig(filename, bbox_inches="tight", dpi=400)
-
-    return plt
