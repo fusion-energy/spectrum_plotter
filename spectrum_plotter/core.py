@@ -135,7 +135,7 @@ def save_plot(
  
 
 def add_axis_title_labels(
-    x_label, y_label, y_scale, x_scale, title, legend, plotting_package
+    x_label: str, y_label: str, y_scale: str, x_scale: str, title: str, legend: bool, plotting_package:str
 ):
 
     if plotting_package == "matplotlib":
@@ -157,52 +157,47 @@ def add_axis_title_labels(
         figure = go.Figure()
 
         figure.update_layout(
+            title=title,
             xaxis={
                 "title": x_label,
-                # "range": (0, 14.1e6)
+                "type": x_scale
             },
-            yaxis={"title": y_label},
+            yaxis={"title": y_label,
+                "type": y_scale
+            },
         )
+
+        if x_scale == 'log':
+            not_x_scale = 'lin'
+        else:
+            not_x_scale = 'log'
+
+        if y_scale == 'log':
+            not_y_scale = 'lin'
+        else:
+            not_y_scale = 'log'
+
+        buttons_list = []
+        for xscale in [x_scale, not_x_scale]:
+            for yscale in [y_scale, not_y_scale]:
+                buttons_list.append(
+                    {
+                        'args':[
+                            {
+                                "xaxis.type": xscale,
+                                "yaxis.type": yscale,
+                            }
+                        ],
+                        'label':f"{xscale}(x) , {yscale}(y)",
+                        'method':"relayout",                
+                    }
+                )
 
         # this adds the dropdown box for log and lin axis selection
         figure.update_layout(
             updatemenus=[
                 go.layout.Updatemenu(
-                    buttons=list(
-                        [
-                            dict(
-                                # TODO order these so that the specificed scale is first
-                                args=[
-                                    {
-                                        "xaxis.type": "lin",
-                                        "yaxis.type": "lin",
-                                    }
-                                ],
-                                label="linear(x) , linear(y)",
-                                method="relayout",
-                            ),
-                            dict(
-                                args=[{"xaxis.type": "log", "yaxis.type": "log"}],
-                                label="log(x) , log(y)",
-                                method="relayout",
-                            ),
-                            dict(
-                                args=[{"xaxis.type": "log", "yaxis.type": "lin"}],
-                                label="log(x) , linear(y)",
-                                method="relayout",
-                            ),
-                            dict(
-                                args=[
-                                    {
-                                        "xaxis.type": "lin",
-                                        "yaxis.type": "log",
-                                    }
-                                ],
-                                label="linear(x) , log(y)",
-                                method="relayout",
-                            ),
-                        ]
-                    ),
+                    buttons=buttons_list,
                     pad={"r": 10, "t": 10},
                     showactive=True,
                     x=0.5,
@@ -262,32 +257,40 @@ def add_spectra_to_plot(
 
     elif plotting_package == "plotly":
 
+        # options are 'linear', 'spline', 'hv', 'vh', 'hvh', 'vhv'
+        shape = 'vh'
+
         # adds a line for the upper stanadard deviation bound
         figure.add_trace(
             go.Scatter(
-                x=x, y=y + y_err, line=dict(shape="hv", width=0)
+                mode='lines',
+                x=x, y=y + y_err, line=dict(shape=shape, width=0),
             )
         )
 
         # adds a line for the lower stanadard deviation bound
         figure.add_trace(
             go.Scatter(
+                mode='lines',
                 x=x,
                 # todo process std dev correction
                 y=y - y_err,
                 name="std. dev.",
-                fill="tonext",
-                line=dict(shape="hv", width=0),
+                # options are 'none', 'tozeroy', 'tozerox', 'tonexty', 'tonextx', 'toself', 'tonext'
+                fill="tonextx",
+                fillcolor=f"rgba{(0.2,0.2,0.2, 0.1)}",
+                line=dict(shape=shape, width=0),
             )
         )
 
         # adds a line for the tally result
         figure.add_trace(
             go.Scatter(
+                mode='lines',
                 x=x,
                 y=y,
                 name=label,
-                line=dict(shape="hv"),
+                line=dict(shape=shape),
             )
         )
 
