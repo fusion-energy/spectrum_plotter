@@ -21,9 +21,9 @@ test_plot = plot_spectrum(
     x_scale="linear",
     y_scale="linear",
     title="example plot 1",
-    plotting_package='plotly',
+    plotting_package="plotly",
     # filename='example_spectra_plotly.png'  # static image export requires kaleido package
-    filename='example_spectrum_plotly.html'
+    filename="example_spectrum_plotly.html",
 )
 
 test_plot.show()
