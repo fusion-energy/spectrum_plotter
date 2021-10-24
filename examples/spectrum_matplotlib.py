@@ -14,6 +14,7 @@ spectrum_with_error = {
     "test plot 2": (x2, y2, y_err2),
 }
 
+# matplotlib style is the default
 test_plot = plot_spectrum(
     spectrum=spectrum_with_error,
     x_label="Energy [MeV]",
@@ -21,6 +22,7 @@ test_plot = plot_spectrum(
     x_scale="linear",
     y_scale="linear",
     title="example plot 1",
+    filename='example_spectrum_matplotlib.png'
 )
 
 test_plot.show()
