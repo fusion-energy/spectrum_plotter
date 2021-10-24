@@ -9,6 +9,169 @@ from numpy.lib.function_base import trim_zeros
 
 
 def plot_spectrum(
+    spectrum: dict,
+    x_label: Optional[str] = "",
+    y_label: Optional[str] = "",
+    x_scale: Optional[str] = "linear",
+    y_scale: Optional[str] = "linear",
+    title: Optional[str] = "",
+    trim_zeros: bool = True,
+    legend: bool = True,
+    filename: Optional[str] = None,
+    plotting_package="matplotlib",
+):
+
+    dictionary_of_values = {}
+
+    for key, value in spectrum.items():
+
+        if isinstance(value, tuple):
+
+            dictionary_of_values[key] = value
+        else:
+            import openmc
+            tally_df = value.get_pandas_dataframe()
+
+            x = tally_df["energy low [eV]"]
+            y = tally_df["mean"]
+            y_err = tally_df["std. dev."]
+
+            dictionary_of_values[key] = (x, y, y_err)
+
+    figure = plot_spectrum_from_values(
+        spectrum=dictionary_of_values,
+        x_label=x_label,
+        y_label=y_label,
+        x_scale=x_scale,
+        y_scale=y_scale,
+        title=title,
+        trim_zeros=trim_zeros,
+        legend=legend,
+        filename=filename,
+        plotting_package=plotting_package,
+    )
+
+    save_plot(plotting_package=plotting_package, filename=filename, figure=figure)
+
+    return figure
+
+
+def plot_spectra(
+    spectra: Tuple[ndarray, ndarray, ndarray],
+    x_label: Optional[str] = "",
+    y_label: Optional[str] = "",
+    x_scale: Optional[str] = "linear",
+    y_scale: Optional[str] = "linear",
+    title: Optional[str] = "",
+    trim_zeros: bool = True,
+    filename: Optional[str] = None,
+    plotting_package="matplotlib",
+):
+
+    if isinstance(spectra, tuple):
+        plot = plot_spectra_from_values(
+            spectra=spectra,
+            x_label=x_label,
+            y_label=y_label,
+            x_scale=x_scale,
+            y_scale=y_scale,
+            title=title,
+            trim_zeros=trim_zeros,
+            filename=filename,
+            plotting_package=plotting_package,
+        )
+    else:
+        plot = plot_spectra_from_tally(
+            spectra=spectra,
+            x_label=x_label,
+            y_label=y_label,
+            x_scale=x_scale,
+            y_scale=y_scale,
+            title=title,
+            trim_zeros=trim_zeros,
+            filename=filename,
+            plotting_package=plotting_package,
+        )
+    return plot
+
+
+def plot_spectrum_from_tally(
+    spectrum: dict,
+    x_label: Optional[str] = "",
+    y_label: Optional[str] = "",
+    x_scale: Optional[str] = "linear",
+    y_scale: Optional[str] = "linear",
+    title: Optional[str] = "",
+    trim_zeros: bool = True,
+    legend: bool = True,
+    filename: Optional[str] = None,
+    plotting_package="matplotlib",
+):
+    import openmc
+
+    dictionary_of_values = {}
+
+    for key, value in spectrum.items():
+        tally_df = value.get_pandas_dataframe()
+
+        x = tally_df["energy low [eV]"]
+        y = tally_df["mean"]
+        y_err = tally_df["std. dev."]
+
+        dictionary_of_values[key] = (x, y, y_err)
+
+    plot = plot_spectrum_from_values(
+        spectrum=dictionary_of_values,
+        x_label=x_label,
+        y_label=y_label,
+        x_scale=x_scale,
+        y_scale=y_scale,
+        title=title,
+        trim_zeros=trim_zeros,
+        legend=legend,
+        filename=filename,
+        plotting_package=plotting_package,
+    )
+
+    return plot
+
+
+def plot_spectra_from_tally(
+    spectra: Tuple[ndarray, ndarray, ndarray],
+    x_label: Optional[str] = "",
+    y_label: Optional[str] = "",
+    x_scale: Optional[str] = "linear",
+    y_scale: Optional[str] = "linear",
+    title: Optional[str] = "",
+    trim_zeros: bool = True,
+    filename: Optional[str] = None,
+    plotting_package="matplotlib",
+):
+
+    import openmc
+
+    tally_df = spectra.get_pandas_dataframe()
+
+    x = tally_df["energy low [eV]"]
+    y = tally_df["mean"]
+    y_err = tally_df["std. dev."]
+
+    plot = plot_spectra_from_values(
+        spectra=(x, y, y_err),
+        x_label=x_label,
+        y_label=y_label,
+        x_scale=x_scale,
+        y_scale=y_scale,
+        title=title,
+        trim_zeros=trim_zeros,
+        filename=filename,
+        plotting_package=plotting_package,
+    )
+
+    return plot
+
+
+def plot_spectrum_from_values(
     spectrum: Dict[str, Tuple[ndarray, ndarray, ndarray]],
     x_label: Optional[str] = "",
     y_label: Optional[str] = "",
@@ -51,19 +214,19 @@ def plot_spectrum(
     for key, value in spectrum.items():
 
         figure = add_spectra_to_plot(
-            value, trim_zeros, label=key, plotting_package=plotting_package, figure=figure
+            value,
+            trim_zeros,
+            label=key,
+            plotting_package=plotting_package,
+            figure=figure,
         )
 
-    save_plot(
-        plotting_package=plotting_package,
-        filename=filename,
-        figure=figure
-    )
+    save_plot(plotting_package=plotting_package, filename=filename, figure=figure)
 
     return figure
 
 
-def plot_spectra(
+def plot_spectra_from_values(
     spectra: Tuple[ndarray, ndarray, ndarray],
     x_label: Optional[str] = "",
     y_label: Optional[str] = "",
@@ -110,32 +273,31 @@ def plot_spectra(
         figure=figure,
     )
 
-    save_plot(
-        plotting_package=plotting_package,
-        filename=filename,
-        figure=figure
-    )
+    save_plot(plotting_package=plotting_package, filename=filename, figure=figure)
 
     return figure
 
-def save_plot(
-        plotting_package: 'str',
-        filename: 'str',
-        figure
-):
+
+def save_plot(plotting_package: "str", filename: "str", figure):
 
     if filename:
-        if plotting_package ==' matplotlib':
+        if plotting_package == " matplotlib":
             figure.savefig(filename, bbox_inches="tight", dpi=400)
-        elif plotting_package == 'plotly':
-            if Path(filename).suffix == '.html':
+        elif plotting_package == "plotly":
+            if Path(filename).suffix == ".html":
                 figure.write_html(filename)
             else:
                 figure.write_image(filename)
- 
+
 
 def add_axis_title_labels(
-    x_label: str, y_label: str, y_scale: str, x_scale: str, title: str, legend: bool, plotting_package:str
+    x_label: str,
+    y_label: str,
+    y_scale: str,
+    x_scale: str,
+    title: str,
+    legend: bool,
+    plotting_package: str,
 ):
 
     if plotting_package == "matplotlib":
@@ -158,38 +320,33 @@ def add_axis_title_labels(
 
         figure.update_layout(
             title=title,
-            xaxis={
-                "title": x_label,
-                "type": x_scale
-            },
-            yaxis={"title": y_label,
-                "type": y_scale
-            },
+            xaxis={"title": x_label, "type": x_scale},
+            yaxis={"title": y_label, "type": y_scale},
         )
 
-        if x_scale == 'log':
-            not_x_scale = 'lin'
+        if x_scale == "log":
+            not_x_scale = "lin"
         else:
-            not_x_scale = 'log'
+            not_x_scale = "log"
 
-        if y_scale == 'log':
-            not_y_scale = 'lin'
+        if y_scale == "log":
+            not_y_scale = "lin"
         else:
-            not_y_scale = 'log'
+            not_y_scale = "log"
 
         buttons_list = []
         for xscale in [x_scale, not_x_scale]:
             for yscale in [y_scale, not_y_scale]:
                 buttons_list.append(
                     {
-                        'args':[
+                        "args": [
                             {
                                 "xaxis.type": xscale,
                                 "yaxis.type": yscale,
                             }
                         ],
-                        'label':f"{xscale}(x) , {yscale}(y)",
-                        'method':"relayout",                
+                        "label": f"{xscale}(x) , {yscale}(y)",
+                        "method": "relayout",
                     }
                 )
 
@@ -258,20 +415,22 @@ def add_spectra_to_plot(
     elif plotting_package == "plotly":
 
         # options are 'linear', 'spline', 'hv', 'vh', 'hvh', 'vhv'
-        shape = 'vh'
+        shape = "vh"
 
         # adds a line for the upper stanadard deviation bound
         figure.add_trace(
             go.Scatter(
-                mode='lines',
-                x=x, y=y + y_err, line=dict(shape=shape, width=0),
+                mode="lines",
+                x=x,
+                y=y + y_err,
+                line=dict(shape=shape, width=0),
             )
         )
 
         # adds a line for the lower stanadard deviation bound
         figure.add_trace(
             go.Scatter(
-                mode='lines',
+                mode="lines",
                 x=x,
                 # todo process std dev correction
                 y=y - y_err,
@@ -286,7 +445,7 @@ def add_spectra_to_plot(
         # adds a line for the tally result
         figure.add_trace(
             go.Scatter(
-                mode='lines',
+                mode="lines",
                 x=x,
                 y=y,
                 name=label,

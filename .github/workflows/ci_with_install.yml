@@ -31,7 +31,15 @@ jobs:
 
       - name: install packages for tests
         run: |
-          pip install -r requirements-test.txt 
+          pip install -r requirements-test.txt
+
+      - name: Run examples
+        run: |
+          # python examples/spectra_matplotlib_from_tally.py needs openmc
+          python examples/spectra_matplotlib_from_values.py
+          python examples/spectra_plotly_from_values.py
+          python examples/spectrum_matplotlib_from_values.py
+          python examples/spectrum_plotly_from_values.py
 
       - name: Run test_utils
         run: |

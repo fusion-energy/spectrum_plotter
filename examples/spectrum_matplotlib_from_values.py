@@ -22,7 +22,7 @@ test_plot = plot_spectrum(
     x_scale="linear",
     y_scale="linear",
     title="example plot 1",
-    filename='example_spectrum_matplotlib.png'
+    filename="example_spectrum_matplotlib.png",
 )
 
 test_plot.show()
