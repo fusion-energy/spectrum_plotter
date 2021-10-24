@@ -1,7 +1,9 @@
+from pathlib import Path
 from typing import Dict, Iterable, Optional, Tuple, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
+import plotly.graph_objects as go
 from numpy import ndarray
 from numpy.lib.function_base import trim_zeros
 
@@ -16,6 +18,7 @@ def plot_spectrum(
     trim_zeros: bool = True,
     legend: bool = True,
     filename: Optional[str] = None,
+    plotting_package="matplotlib",
 ) -> plt:
     """Plots a stepped line graph with optional shaded region for Y error.
     Intended use for ploting neutron / photon spectra
@@ -35,25 +38,29 @@ def plot_spectrum(
         the matplotlib.pyplot object produced
     """
 
-    plt = add_axis_title_labels(
-        x_label,
-        y_label,
-        y_scale,
-        x_scale,
-        title,
+    figure = add_axis_title_labels(
+        x_label=x_label,
+        y_label=y_label,
+        y_scale=y_scale,
+        x_scale=x_scale,
+        title=title,
+        legend=legend,
+        plotting_package=plotting_package,
     )
 
     for key, value in spectrum.items():
 
-        add_spectra_to_matplotlib_plot(value, trim_zeros, label=key)
+        figure = add_spectra_to_plot(
+            value, trim_zeros, label=key, plotting_package=plotting_package, figure=figure
+        )
 
-    if legend:
-        plt.legend()
-    plt.title(title)
-    if filename:
-        plt.savefig(filename, bbox_inches="tight", dpi=400)
+    save_plot(
+        plotting_package=plotting_package,
+        filename=filename,
+        figure=figure
+    )
 
-    return plt
+    return figure
 
 
 def plot_spectra(
@@ -65,6 +72,7 @@ def plot_spectra(
     title: Optional[str] = "",
     trim_zeros: bool = True,
     filename: Optional[str] = None,
+    plotting_package="matplotlib",
 ) -> plt:
     """Plots a stepped line graph with optional shaded region for Y error.
     Intended use for ploting neutron / photon spectra
@@ -84,43 +92,135 @@ def plot_spectra(
         the matplotlib.pyplot object produced
     """
 
-    plt = add_axis_title_labels(
-        x_label,
-        y_label,
-        y_scale,
-        x_scale,
-        title,
+    figure = add_axis_title_labels(
+        x_label=x_label,
+        y_label=y_label,
+        y_scale=y_scale,
+        x_scale=x_scale,
+        title=title,
+        legend=None,
+        plotting_package=plotting_package,
     )
 
-    add_spectra_to_matplotlib_plot(spectra=spectra, trim_zeros=trim_zeros, label=None)
+    figure = add_spectra_to_plot(
+        spectra=spectra,
+        trim_zeros=trim_zeros,
+        label=None,
+        plotting_package=plotting_package,
+        figure=figure,
+    )
+
+    save_plot(
+        plotting_package=plotting_package,
+        filename=filename,
+        figure=figure
+    )
+
+    return figure
+
+def save_plot(
+        plotting_package: 'str',
+        filename: 'str',
+        figure
+):
 
     if filename:
-        plt.savefig(filename, bbox_inches="tight", dpi=400)
-
-    return plt
-
+        if plotting_package ==' matplotlib':
+            figure.savefig(filename, bbox_inches="tight", dpi=400)
+        elif plotting_package == 'plotly':
+            if Path(filename).suffix == '.html':
+                figure.write_html(filename)
+            else:
+                figure.write_image(filename)
+ 
 
 def add_axis_title_labels(
-    x_label,
-    y_label,
-    y_scale,
-    x_scale,
-    title,
+    x_label: str, y_label: str, y_scale: str, x_scale: str, title: str, legend: bool, plotting_package:str
 ):
-    plt.figure(0)
-    plt.xlabel(x_label)
-    plt.ylabel(y_label)
 
-    plt.yscale(y_scale)
-    plt.xscale(x_scale)
+    if plotting_package == "matplotlib":
+        plt.figure(0)
+        plt.xlabel(x_label)
+        plt.ylabel(y_label)
 
-    plt.title(title)
+        plt.yscale(y_scale)
+        plt.xscale(x_scale)
 
-    return plt
+        plt.title(title)
+
+        if legend:
+            plt.legend()
+
+        return plt
+
+    elif plotting_package == "plotly":
+        figure = go.Figure()
+
+        figure.update_layout(
+            title=title,
+            xaxis={
+                "title": x_label,
+                "type": x_scale
+            },
+            yaxis={"title": y_label,
+                "type": y_scale
+            },
+        )
+
+        if x_scale == 'log':
+            not_x_scale = 'lin'
+        else:
+            not_x_scale = 'log'
+
+        if y_scale == 'log':
+            not_y_scale = 'lin'
+        else:
+            not_y_scale = 'log'
+
+        buttons_list = []
+        for xscale in [x_scale, not_x_scale]:
+            for yscale in [y_scale, not_y_scale]:
+                buttons_list.append(
+                    {
+                        'args':[
+                            {
+                                "xaxis.type": xscale,
+                                "yaxis.type": yscale,
+                            }
+                        ],
+                        'label':f"{xscale}(x) , {yscale}(y)",
+                        'method':"relayout",                
+                    }
+                )
+
+        # this adds the dropdown box for log and lin axis selection
+        figure.update_layout(
+            updatemenus=[
+                go.layout.Updatemenu(
+                    buttons=buttons_list,
+                    pad={"r": 10, "t": 10},
+                    showactive=True,
+                    x=0.5,
+                    xanchor="left",
+                    y=1.1,
+                    yanchor="top",
+                ),
+            ]
+        )
+
+        return figure
+
+    else:
+        msg = f'plotting_package must be set to "matplotlib" or "plotly" not {plotting_package}'
+        raise ValueError(msg)
 
 
-def add_spectra_to_matplotlib_plot(
-    spectra: Tuple[ndarray, ndarray, ndarray], trim_zeros: bool, label: Union[str, None]
+def add_spectra_to_plot(
+    spectra: Tuple[ndarray, ndarray, ndarray],
+    trim_zeros: bool,
+    label: Union[str, None],
+    plotting_package: str,
+    figure,
 ):
     # mid and post are also options but pre is used as energy bins start from 0
 
@@ -144,9 +244,58 @@ def add_spectra_to_matplotlib_plot(
         if len(spectra) == 3:
             y_err = np.array(y_err)
 
-    plt.step(x, y, where="pre", label=label)
+    if plotting_package == "matplotlib":
 
-    if len(spectra) == 3:
-        lower_y = y - y_err
-        upper_y = y + y_err
-        plt.fill_between(x, lower_y, upper_y, step="pre", color="k", alpha=0.15)
+        plt.step(x, y, where="pre", label=label)
+
+        if len(spectra) == 3:
+            lower_y = y - y_err
+            upper_y = y + y_err
+            plt.fill_between(x, lower_y, upper_y, step="pre", color="k", alpha=0.15)
+
+        return plt
+
+    elif plotting_package == "plotly":
+
+        # options are 'linear', 'spline', 'hv', 'vh', 'hvh', 'vhv'
+        shape = 'vh'
+
+        # adds a line for the upper stanadard deviation bound
+        figure.add_trace(
+            go.Scatter(
+                mode='lines',
+                x=x, y=y + y_err, line=dict(shape=shape, width=0),
+            )
+        )
+
+        # adds a line for the lower stanadard deviation bound
+        figure.add_trace(
+            go.Scatter(
+                mode='lines',
+                x=x,
+                # todo process std dev correction
+                y=y - y_err,
+                name="std. dev.",
+                # options are 'none', 'tozeroy', 'tozerox', 'tonexty', 'tonextx', 'toself', 'tonext'
+                fill="tonextx",
+                fillcolor=f"rgba{(0.2,0.2,0.2, 0.1)}",
+                line=dict(shape=shape, width=0),
+            )
+        )
+
+        # adds a line for the tally result
+        figure.add_trace(
+            go.Scatter(
+                mode='lines',
+                x=x,
+                y=y,
+                name=label,
+                line=dict(shape=shape),
+            )
+        )
+
+        return figure
+
+    else:
+        msg = f'plotting_package must be set to "matplotlib" or "plotly" not {plotting_package}'
+        raise ValueError(msg)
