@@ -63,7 +63,7 @@ def plot_spectra(
 ):
 
     if isinstance(spectra, tuple):
-        plot = plot_spectrum_from_values(
+        plot = plot_spectra_from_values(
             spectra=spectra,
             x_label=x_label,
             y_label=y_label,
