@@ -12,6 +12,9 @@ test_plot = plot_spectra(
     x_scale="linear",
     y_scale="linear",
     title="example plot 1",
+    plotting_package="plotly",
+    # filename='example_spectra_plotly.png'  # static image export requires kaleido package
+    filename='example_spectra_plotly.html'
 )
 
 test_plot.show()
