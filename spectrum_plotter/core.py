@@ -21,33 +21,39 @@ def plot_spectrum(
     plotting_package="matplotlib",
 ):
 
-    if isinstance(spectrum, tuple):
-        plot = plot_spectrum_from_values(
-            spectrum=spectrum,
-            x_label=x_label,
-            y_label=y_label,
-            x_scale=x_scale,
-            y_scale=y_scale,
-            title=title,
-            trim_zeros=trim_zeros,
-            legend=legend,
-            filename=filename,
-            plotting_package=plotting_package,
-        )
-    else:
-        plot = plot_spectrum_from_tally(
-            spectrum=spectrum,
-            x_label=x_label,
-            y_label=y_label,
-            x_scale=x_scale,
-            y_scale=y_scale,
-            title=title,
-            trim_zeros=trim_zeros,
-            legend=legend,
-            filename=filename,
-            plotting_package=plotting_package,
-        )
-    return plot
+    dictionary_of_values = {}
+
+    for key, value in spectrum.items():
+
+        if isinstance(value, tuple):
+
+            dictionary_of_values[key] = value
+        else:
+            import openmc
+            tally_df = value.get_pandas_dataframe()
+
+            x = tally_df["energy low [eV]"]
+            y = tally_df["mean"]
+            y_err = tally_df["std. dev."]
+
+            dictionary_of_values[key] = (x, y, y_err)
+
+    figure = plot_spectrum_from_values(
+        spectrum=dictionary_of_values,
+        x_label=x_label,
+        y_label=y_label,
+        x_scale=x_scale,
+        y_scale=y_scale,
+        title=title,
+        trim_zeros=trim_zeros,
+        legend=legend,
+        filename=filename,
+        plotting_package=plotting_package,
+    )
+
+    save_plot(plotting_package=plotting_package, filename=filename, figure=figure)
+
+    return figure
 
 
 def plot_spectra(
