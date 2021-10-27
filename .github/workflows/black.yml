@@ -26,7 +26,7 @@ jobs:
         pip install black
     - name: Run black
       run: |
-        black src examples tests
+        black openmc_post_processor examples tests
     - uses: stefanzweifel/git-auto-commit-action@v4
       with:
         commit_message: "[skip ci] Apply formatting changes"
