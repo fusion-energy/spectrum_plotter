@@ -14,8 +14,8 @@ class TestPlotSpectrum(unittest.TestCase):
         y2 = np.array([0, 1, 1, 0.5, 0.4, 3])
         y_err2 = np.array([0.2, 0.1, 0.4, 0.1, 0.1, 0.2])
 
-        self.spectrum = {'test plot_1': (x1, y1)}
-        self.spectrum_with_error = {'test plot_1': (x1, y1, y_err1)}
+        self.spectrum = {"test plot_1": (x1, y1)}
+        self.spectrum_with_error = {"test plot_1": (x1, y1, y_err1)}
 
         self.spectrum_2 = {"test plot_1": (x1, y1), "test plot 2": (x2, y2)}
         self.spectrum_2_with_error = {

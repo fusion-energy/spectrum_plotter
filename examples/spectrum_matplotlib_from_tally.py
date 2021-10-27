@@ -78,7 +78,7 @@ my_tally_2 = statepoint.get_tally(name="mat1_photon_spectra")
 
 # matplotlib style is the default
 test_plot = plot_spectrum_from_tally(
-    spectrum={'neutron spectra': my_tally_1, 'photon spectra':my_tally_2},
+    spectrum={"neutron spectra": my_tally_1, "photon spectra": my_tally_2},
     x_label="Energy [MeV]",
     y_label="Flux [n/cm^2s]",
     x_scale="linear",
