@@ -3,7 +3,7 @@ import openmc_dagmc_wrapper as odw
 import openmc_plasma_source as ops
 import openmc_post_processor as opp
 import paramak
-from spectrum_plotter import plot_spectra_from_tally
+from spectrum_plotter import plot_spectrum_from_tally
 from stl_to_h5m import stl_to_h5m
 
 # This minimal example makes a 3D volume and exports the shape to a stp file
@@ -74,7 +74,7 @@ statepoint = openmc.StatePoint(statepoint_file)
 my_tally = statepoint.get_tally(name="mat1_neutron_spectra")
 
 # matplotlib style is the default
-test_plot = plot_spectra_from_tally(
+test_plot = plot_spectrum_from_tally(
     spectra=my_tally,
     x_label="Energy [MeV]",
     y_label="Flux [n/cm^2s]",
@@ -87,7 +87,7 @@ test_plot = plot_spectra_from_tally(
 test_plot.show()
 
 # plotly style
-test_plot = plot_spectra_from_tally(
+test_plot = plot_spectrum_from_tally(
     spectra=my_tally,
     x_label="Energy [MeV]",
     y_label="Flux [n/cm^2s]",

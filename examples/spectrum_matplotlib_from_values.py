@@ -1,4 +1,4 @@
-from spectrum_plotter import plot_spectrum
+from spectrum_plotter import plot_spectrum_from_values
 import numpy as np
 
 x1 = np.array([1, 2, 3, 4, 5, 6])
@@ -15,7 +15,7 @@ spectrum_with_error = {
 }
 
 # matplotlib style is the default
-test_plot = plot_spectrum(
+test_plot = plot_spectrum_from_values(
     spectrum=spectrum_with_error,
     x_label="Energy [MeV]",
     y_label="Flux [n/cm^2s]",
