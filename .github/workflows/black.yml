@@ -24,13 +24,9 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install black
-    - name: Version
-      run: |
-        python --version
-        black --version
     - name: Run black
       run: |
         black src examples tests
     - uses: stefanzweifel/git-auto-commit-action@v4
       with:
-        commit_message: "[skip ci] Apply black changes"
+        commit_message: "[skip ci] Apply formatting changes"
