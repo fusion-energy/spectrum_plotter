@@ -3,96 +3,10 @@ from typing import Dict, Iterable, Optional, Tuple, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
+import openmc_post_processor as opp
 import plotly.graph_objects as go
 from numpy import ndarray
 from numpy.lib.function_base import trim_zeros
-
-
-def plot_spectrum(
-    spectrum: dict,
-    x_label: Optional[str] = "",
-    y_label: Optional[str] = "",
-    x_scale: Optional[str] = "linear",
-    y_scale: Optional[str] = "linear",
-    title: Optional[str] = "",
-    trim_zeros: bool = True,
-    legend: bool = True,
-    filename: Optional[str] = None,
-    plotting_package="matplotlib",
-):
-
-    dictionary_of_values = {}
-
-    for key, value in spectrum.items():
-
-        if isinstance(value, tuple):
-
-            dictionary_of_values[key] = value
-        else:
-            import openmc
-            tally_df = value.get_pandas_dataframe()
-
-            x = tally_df["energy low [eV]"]
-            y = tally_df["mean"]
-            y_err = tally_df["std. dev."]
-
-            dictionary_of_values[key] = (x, y, y_err)
-
-    figure = plot_spectrum_from_values(
-        spectrum=dictionary_of_values,
-        x_label=x_label,
-        y_label=y_label,
-        x_scale=x_scale,
-        y_scale=y_scale,
-        title=title,
-        trim_zeros=trim_zeros,
-        legend=legend,
-        filename=filename,
-        plotting_package=plotting_package,
-    )
-
-    save_plot(plotting_package=plotting_package, filename=filename, figure=figure)
-
-    return figure
-
-
-def plot_spectra(
-    spectra: Tuple[ndarray, ndarray, ndarray],
-    x_label: Optional[str] = "",
-    y_label: Optional[str] = "",
-    x_scale: Optional[str] = "linear",
-    y_scale: Optional[str] = "linear",
-    title: Optional[str] = "",
-    trim_zeros: bool = True,
-    filename: Optional[str] = None,
-    plotting_package="matplotlib",
-):
-
-    if isinstance(spectra, tuple):
-        plot = plot_spectra_from_values(
-            spectra=spectra,
-            x_label=x_label,
-            y_label=y_label,
-            x_scale=x_scale,
-            y_scale=y_scale,
-            title=title,
-            trim_zeros=trim_zeros,
-            filename=filename,
-            plotting_package=plotting_package,
-        )
-    else:
-        plot = plot_spectra_from_tally(
-            spectra=spectra,
-            x_label=x_label,
-            y_label=y_label,
-            x_scale=x_scale,
-            y_scale=y_scale,
-            title=title,
-            trim_zeros=trim_zeros,
-            filename=filename,
-            plotting_package=plotting_package,
-        )
-    return plot
 
 
 def plot_spectrum_from_tally(
@@ -106,17 +20,23 @@ def plot_spectrum_from_tally(
     legend: bool = True,
     filename: Optional[str] = None,
     plotting_package="matplotlib",
+    required_units: str = "centimeters / simulated_particle",
+    required_energy_units: str = "eV",
+    source_strength: float = None,
+    volume: float = None,
 ):
-    import openmc
 
     dictionary_of_values = {}
 
     for key, value in spectrum.items():
-        tally_df = value.get_pandas_dataframe()
 
-        x = tally_df["energy low [eV]"]
-        y = tally_df["mean"]
-        y_err = tally_df["std. dev."]
+        x, y, y_err = opp.process_spectra_tally(
+            tally=value,
+            required_units=required_units,
+            required_energy_units=required_energy_units,
+            source_strength=source_strength,
+            volume=volume,
+        )
 
         dictionary_of_values[key] = (x, y, y_err)
 
@@ -129,41 +49,6 @@ def plot_spectrum_from_tally(
         title=title,
         trim_zeros=trim_zeros,
         legend=legend,
-        filename=filename,
-        plotting_package=plotting_package,
-    )
-
-    return plot
-
-
-def plot_spectra_from_tally(
-    spectra: Tuple[ndarray, ndarray, ndarray],
-    x_label: Optional[str] = "",
-    y_label: Optional[str] = "",
-    x_scale: Optional[str] = "linear",
-    y_scale: Optional[str] = "linear",
-    title: Optional[str] = "",
-    trim_zeros: bool = True,
-    filename: Optional[str] = None,
-    plotting_package="matplotlib",
-):
-
-    import openmc
-
-    tally_df = spectra.get_pandas_dataframe()
-
-    x = tally_df["energy low [eV]"]
-    y = tally_df["mean"]
-    y_err = tally_df["std. dev."]
-
-    plot = plot_spectra_from_values(
-        spectra=(x, y, y_err),
-        x_label=x_label,
-        y_label=y_label,
-        x_scale=x_scale,
-        y_scale=y_scale,
-        title=title,
-        trim_zeros=trim_zeros,
         filename=filename,
         plotting_package=plotting_package,
     )
@@ -226,59 +111,7 @@ def plot_spectrum_from_values(
     return figure
 
 
-def plot_spectra_from_values(
-    spectra: Tuple[ndarray, ndarray, ndarray],
-    x_label: Optional[str] = "",
-    y_label: Optional[str] = "",
-    x_scale: Optional[str] = "linear",
-    y_scale: Optional[str] = "linear",
-    title: Optional[str] = "",
-    trim_zeros: bool = True,
-    filename: Optional[str] = None,
-    plotting_package="matplotlib",
-) -> plt:
-    """Plots a stepped line graph with optional shaded region for Y error.
-    Intended use for ploting neutron / photon spectra
-
-    Arguments:
-        spectra: An iterable of x, y, y_error values
-        x_label: the label to use on the x axis,
-        y_label: the label to use on the y axis,
-        x_scale: the scale to use for the x axis. Options are 'linear', 'log'
-        y_scale: the scale to use for the y axis. Options are 'linear', 'log'
-        title: the plot title
-        filename: the filename to save the plot as
-        trim_zeros: whether any zero values at the end of the x iterable
-            should be removed from the plot.
-
-    Returns:
-        the matplotlib.pyplot object produced
-    """
-
-    figure = add_axis_title_labels(
-        x_label=x_label,
-        y_label=y_label,
-        y_scale=y_scale,
-        x_scale=x_scale,
-        title=title,
-        legend=None,
-        plotting_package=plotting_package,
-    )
-
-    figure = add_spectra_to_plot(
-        spectra=spectra,
-        trim_zeros=trim_zeros,
-        label=None,
-        plotting_package=plotting_package,
-        figure=figure,
-    )
-
-    save_plot(plotting_package=plotting_package, filename=filename, figure=figure)
-
-    return figure
-
-
-def save_plot(plotting_package: "str", filename: "str", figure):
+def save_plot(plotting_package: str, filename: str, figure):
 
     if filename:
         if plotting_package == " matplotlib":

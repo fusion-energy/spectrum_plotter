@@ -1,2 +1,3 @@
-from .core import plot_spectrum
-from .core import plot_spectra
+
+from .core import plot_spectrum_from_tally
+from .core import plot_spectrum_from_values
