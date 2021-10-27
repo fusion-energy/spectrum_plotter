@@ -3,7 +3,7 @@ from typing import Dict, Iterable, Optional, Tuple, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
-import openmc_post_processor as opp
+
 import plotly.graph_objects as go
 from numpy import ndarray
 from numpy.lib.function_base import trim_zeros
@@ -26,19 +26,25 @@ def plot_spectrum_from_tally(
     volume: float = None,
 ):
 
+    import openmc_post_processor as opp
+
     dictionary_of_values = {}
 
     for key, value in spectrum.items():
 
-        x, y, y_err = opp.process_spectra_tally(
+        x_y_y_err = opp.process_spectra_tally(
             tally=value,
             required_units=required_units,
             required_energy_units=required_energy_units,
             source_strength=source_strength,
             volume=volume,
         )
-
-        dictionary_of_values[key] = (x, y, y_err)
+        if len(x_y_y_err) == 3:
+            x, y, y_err = x_y_y_err
+            dictionary_of_values[key] = (x, y, y_err)
+        else:
+            x, y = x_y_y_err
+            dictionary_of_values[key] = (x, y)
 
     plot = plot_spectrum_from_values(
         spectrum=dictionary_of_values,
@@ -114,7 +120,7 @@ def plot_spectrum_from_values(
 def save_plot(plotting_package: str, filename: str, figure):
 
     if filename:
-        if plotting_package == " matplotlib":
+        if plotting_package == "matplotlib":
             figure.savefig(filename, bbox_inches="tight", dpi=400)
         elif plotting_package == "plotly":
             if Path(filename).suffix == ".html":
