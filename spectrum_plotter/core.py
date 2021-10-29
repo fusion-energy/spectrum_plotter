@@ -69,27 +69,36 @@ def plot_spectrum_from_values(
     x_scale: Optional[str] = "linear",
     y_scale: Optional[str] = "linear",
     title: Optional[str] = "",
-    trim_zeros: bool = True,
     legend: bool = True,
     filename: Optional[str] = None,
     plotting_package="matplotlib",
+    trim_zeros: bool = True,
 ) -> plt:
     """Plots a stepped line graph with optional shaded region for Y error.
     Intended use for ploting neutron / photon spectra
 
     Arguments:
-        spectrum: A dictionary of x, y, y_error values
+        spectrum: A dictionary of where the key is the spectra title and the
+            dictionary values are a list containing x and y values. Optionally
+            y_error values can also be included in the list. x, y and y_error
+            should all be numpy arrays.
         x_label: the label to use on the x axis,
         y_label: the label to use on the y axis,
         x_scale: the scale to use for the x axis. Options are 'linear', 'log'
         y_scale: the scale to use for the y axis. Options are 'linear', 'log'
-        title: the plot title
-        filename: the filename to save the plot as
+        title: the title applied to the top of the plot
+        legend: controls if a legend should be displayed or not. If set to True
+            a legend with spectra titles will be displayed and if set to False
+            the legend will not be displayed.
+        filename: the filename to save the plot as should end with the correct
+            extention supported by matplotlib (e.g .png) or plotly (e.g html)
+        plotting_package: the name of the python package to use when producing
+            the plots. Options are 'matplotlib' or 'plotly'
         trim_zeros: whether any zero values at the end of the x iterable
             should be removed from the plot.
 
     Returns:
-        the matplotlib.pyplot object produced
+        the matplotlib.pyplot or plotly.graph_objects object produced
     """
 
     figure = add_axis_title_labels(
