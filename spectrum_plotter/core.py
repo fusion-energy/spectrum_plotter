@@ -18,7 +18,7 @@ def plot_spectrum_from_tally(
     title: Optional[str] = "",
     legend: bool = True,
     filename: Optional[str] = None,
-    plotting_package="matplotlib",
+    plotting_package: Optional[str]="matplotlib",
     trim_zeros: bool = True,
     required_units: str = "centimeters / simulated_particle",
     required_energy_units: str = "eV",
@@ -111,7 +111,7 @@ def plot_spectrum_from_values(
     title: Optional[str] = "",
     legend: bool = True,
     filename: Optional[str] = None,
-    plotting_package="matplotlib",
+    plotting_package: Optional[str] ="matplotlib",
     trim_zeros: bool = True,
 ) -> plt:
     """Plots a stepped line graph with optional shaded region for Y error.
