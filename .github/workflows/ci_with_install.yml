@@ -42,7 +42,8 @@ jobs:
 
       - name: Run examples
         run: |
-
+          cd examples
+          python create_statepoint_file_for_testing.py --batches 2 --particles 100
           python examples/spectra_matplotlib_from_tally.py
           python examples/spectra_matplotlib_from_values.py
           python examples/spectra_plotly_from_values.py
