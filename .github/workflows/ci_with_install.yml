@@ -31,14 +31,18 @@ jobs:
 
       - name: install packages for tests
         run: |
+          conda install -c conda-forge h5py=3.2.1
+          conda install -c conda-forge moab
           conda install -c conda-forge openmc
           pip install -r requirements-test.txt
 
       - name: Run examples
         run: |
-          # python examples/spectra_matplotlib_from_tally.py needs openmc
+
+          python examples/spectra_matplotlib_from_tally.py
           python examples/spectra_matplotlib_from_values.py
           python examples/spectra_plotly_from_values.py
+          python examples/spectrum_matplotlib_from_tally.py
           python examples/spectrum_matplotlib_from_values.py
           python examples/spectrum_plotly_from_values.py
 
