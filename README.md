@@ -4,7 +4,7 @@
 
 [![Upload Python Package](https://github.com/fusion-energy/spectrum_plotter/actions/workflows/python-publish.yml/badge.svg)](https://github.com/fusion-energy/spectrum_plotter/actions/workflows/python-publish.yml)
 
-# spectrum_plotter
+# Spectrum Plotter
 A Python package for creating standard plots for neutron / photon / particle spectrum
 
 # Installation
