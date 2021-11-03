@@ -7,7 +7,7 @@ y_err = np.array([0.2, 0.1, 0.4, 0.1, 0.1, 0.2])
 
 # matplotlib style is the default
 test_plot = plot_spectrum_from_values(
-    spectra=(x, y, y_err),
+    spectrum={"my spectra": (x, y, y_err)},
     x_label="Energy [MeV]",
     y_label="Flux [n/cm^2s]",
     x_scale="linear",
