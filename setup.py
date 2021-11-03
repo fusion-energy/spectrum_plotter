@@ -37,6 +37,6 @@ setuptools.setup(
         "matplotlib>=3.2.2",
         "plotly",
         "openmc_post_processor",
-        # "kaleido"  # require to save static images with plotly
+        # "kaleido"  # required to save static images with plotly
     ],
 )
