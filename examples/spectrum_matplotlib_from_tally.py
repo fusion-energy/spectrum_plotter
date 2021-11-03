@@ -2,7 +2,7 @@ import openmc
 from spectrum_plotter import plot_spectrum_from_tally
 
 # loads up the statepoint file with simulation results
-statepoint = openmc.StatePoint('statepoint.2.h5')
+statepoint = openmc.StatePoint("statepoint.2.h5")
 
 # gets the first tally using its name
 my_tally = statepoint.get_tally(name="neutron_spectra")
