@@ -2,8 +2,6 @@
 # A surrounding volume called a graveyard is needed for neutronics simulations
 
 import openmc
-import openmc_dagmc_wrapper as odw
-import openmc_plasma_source as ops
 import openmc_data_downloader as odd
 import argparse
 
@@ -34,7 +32,7 @@ iron.add_element("Pb", 0.95, percent_type="wo")
 
 materials = openmc.Materials([breeder_material, iron])
 
-odd.just_in_time_library_generator(libraries="TENDL-2019", materials=materials)
+odd.just_in_time_library_generator(libraries=["ENDFB-7.1-NNDC", "TENDL-2019"], materials=materials)
 
 # GEOMETRY
 
@@ -61,44 +59,44 @@ universe = openmc.Universe(
 )
 geometry = openmc.Geometry(universe)
 
-tally1 = odw.CellTally(
-    tally_type="neutron_spectra",
-    target=2,
-)
+cell_filter = openmc.CellFilter(first_wall_cell)
+energy_bins = openmc.mgxs.GROUP_STRUCTURES["CCFE-709"]
+energy_filter = openmc.EnergyFilter(energy_bins)
+photon_particle_filter = openmc.ParticleFilter(["photon"])
+neutron_particle_filter = openmc.ParticleFilter(["neutron"])
 
-tally2 = odw.CellTally(
-    tally_type="neutron_spectra",
-    target=2,
-)
+tally1 = openmc.Tally(1, "neutron_spectra")
+tally1.scores = ["flux"]
+tally1.filters.append(cell_filter)
+tally1.filters.append(energy_filter)
+tally1.filters.append(neutron_particle_filter)
 
-tally3 = odw.CellTally(
-    tally_type="neutron_spectra",
-    target=3,
-)
-
-tally4 = odw.CellTally(
-    tally_type="photon_spectra",
-    target=2,
-)
-
+tally2 = openmc.Tally(2, "photon_spectra")
+tally2.scores = ["flux"]
+tally2.filters.append(cell_filter)
+tally2.filters.append(energy_filter)
+tally2.filters.append(photon_particle_filter)
 
 tallies = openmc.Tallies(
     [
         tally1,
         tally2,
-        tally3,
-        tally4,
     ]
 )
 
-
-settings = odw.FusionSettings()
+settings = openmc.Settings()
+settings.inactive = 0
+settings.run_mode = "fixed source"
 settings.batches = args.batches
 settings.particles = args.particles
+settings.photon_transport = True
 # assigns a ring source of DT energy neutrons to the source using the
 # openmc_plasma_source package
-settings.source = ops.FusionPointSource()
 
+source = openmc.Source()
+source.space = openmc.stats.Point((0, 0, 0))
+source.angle = openmc.stats.Isotropic()
+settings.source = source
 
 my_model = openmc.model.Model(
     materials=materials, geometry=geometry, settings=settings, tallies=tallies

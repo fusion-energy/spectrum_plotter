@@ -20,7 +20,7 @@ jobs:
   testing:
     runs-on: ubuntu-latest
     container:
-      image: openmc/openmc:latest-dagmc
+      image: openmc/openmc:latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -41,12 +41,12 @@ jobs:
         run: |
           cd examples
           python create_statepoint_file_for_testing.py --batches 2 --particles 100
-          python examples/spectra_matplotlib_from_tally.py
-          python examples/spectra_matplotlib_from_values.py
-          python examples/spectra_plotly_from_values.py
-          python examples/spectrum_matplotlib_from_tally.py
-          python examples/spectrum_matplotlib_from_values.py
-          python examples/spectrum_plotly_from_values.py
+          python spectra_matplotlib_from_tally.py
+          python spectra_matplotlib_from_values.py
+          python spectra_plotly_from_values.py
+          python spectrum_matplotlib_from_tally.py
+          python spectrum_matplotlib_from_values.py
+          python spectrum_plotly_from_values.py
 
       - name: Upload to codecov
         uses: codecov/codecov-action@v2
