@@ -17,9 +17,8 @@ pip install spectrum_plotter
 
 There are two main functions for plotting spectrum:
 
-```plot_spectrum_from_values()``` - allows users to pass in the tally via a dictionary of numpy arrays.
+```plot_spectrum_from_values()``` - allows users to pass in the tally via a dictionary of tuples where each tuple contains x,y and optionally y_error values as numpy arrays.
 
-```plot_spectrum_from_tally()``` - allows users to pass in an OpenMC tally and plot the result. OpenMC is therefore required for this approach
-
+```plot_spectrum_from_tally()``` - allows users to pass in an OpenMC tally and plot the result. Units can be automatically scaled,normalised and converted.
 
 :point_right: [Examples](https://github.com/fusion-energy/spectrum_plotter/tree/main/examples)
