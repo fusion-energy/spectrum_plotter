@@ -61,9 +61,8 @@ universe = openmc.Universe(
 )
 geometry = openmc.Geometry(universe)
 
-
 tally1 = odw.CellTally(
-    tally_type="flux",
+    tally_type="neutron_spectra",
     target=2,
 )
 
@@ -73,77 +72,15 @@ tally2 = odw.CellTally(
 )
 
 tally3 = odw.CellTally(
-    tally_type="TBR",
-    target=2,
-)
-
-tally4 = odw.CellTally(
-    tally_type="heating",
-    target=2,
-)
-
-tally5 = odw.CellTally(
-    tally_type="neutron_effective_dose",
-    target=2,
-)
-
-tally6 = odw.CellTally(
-    tally_type="photon_effective_dose",
-    target=2,
-)
-
-tally7 = odw.CellTally(
-    tally_type="neutron_fast_flux",
-    target=2,
-)
-
-tally8 = odw.CellTally(
-    tally_type="photon_fast_flux",
-    target=2,
-)
-
-tally9 = odw.CellTally(
-    tally_type="neutron_spectra",
-    target=2,
-)
-
-tally10 = odw.CellTally(
-    tally_type="neutron_spectra",
-    target=2,
-)
-
-tally11 = odw.CellTally(
     tally_type="neutron_spectra",
     target=3,
 )
 
-tally12 = odw.CellTally(
+tally4 = odw.CellTally(
     tally_type="photon_spectra",
     target=2,
 )
 
-tally13 = odw.CellTally(
-    tally_type="(n,total)",
-    target=2,
-)
-
-tally14 = odw.CellTally(
-    tally_type="damage-energy",
-    target=2,
-)
-
-tally15 = odw.MeshTally2D(
-    tally_type="neutron_effective_dose",
-    plane="xy",
-    mesh_resolution=(10, 5),
-    bounding_box=[(-100, -100, 0), (100, 100, 1)],
-)
-
-tally16 = odw.MeshTally3D(
-    mesh_resolution=(100, 100, 100),
-    bounding_box=[(-100, -100, 0), (100, 100, 1)],
-    tally_type="neutron_effective_dose",
-)
 
 tallies = openmc.Tallies(
     [
@@ -151,18 +88,6 @@ tallies = openmc.Tallies(
         tally2,
         tally3,
         tally4,
-        tally5,
-        tally6,
-        tally7,
-        tally8,
-        tally9,
-        tally10,
-        tally11,
-        tally12,
-        tally13,
-        tally14,
-        tally15,
-        tally16,
     ]
 )
 
