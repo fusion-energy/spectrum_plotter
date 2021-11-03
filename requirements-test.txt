@@ -1,2 +1,3 @@
 openmc_dagmc_wrapper
+openmc_plasma_source
 pytest-cov>=2.12.1
