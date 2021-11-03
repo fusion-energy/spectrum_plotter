@@ -33,7 +33,7 @@ setuptools.setup(
         ]
     },
     install_requires=[
-        'numpy>=1.9',
+        "numpy>=1.9",
         "matplotlib>=3.2.2",
         "plotly",
         "openmc_post_processor",
