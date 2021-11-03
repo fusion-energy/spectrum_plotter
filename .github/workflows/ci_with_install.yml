@@ -20,31 +20,33 @@ jobs:
   testing:
     runs-on: ubuntu-latest
     container:
-      image: continuumio/miniconda3:4.9.2
+      image: openmc/openmc:latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: install package
+      - name: install package and dependencies
         run: |
           python setup.py install
 
       - name: install packages for tests
         run: |
-          conda install -c conda-forge openmc
-          pip install -r requirements-test.txt
-
-      - name: Run examples
-        run: |
-          # python examples/spectra_matplotlib_from_tally.py needs openmc
-          python examples/spectra_matplotlib_from_values.py
-          python examples/spectra_plotly_from_values.py
-          python examples/spectrum_matplotlib_from_values.py
-          python examples/spectrum_plotly_from_values.py
+          pip install -r requirements-test.txt 
 
       - name: Run test_utils
         run: |
           pytest tests/ -v --cov=spectrum_plotter --cov-append --cov-report term --cov-report xml
+
+      - name: Run examples
+        run: |
+          cd examples
+          python create_statepoint_file_for_testing.py --batches 2 --particles 100
+          python spectra_matplotlib_from_tally.py
+          python spectra_matplotlib_from_values.py
+          python spectra_plotly_from_values.py
+          python spectrum_matplotlib_from_tally.py
+          python spectrum_matplotlib_from_values.py
+          python spectrum_plotly_from_values.py
 
       - name: Upload to codecov
         uses: codecov/codecov-action@v2
