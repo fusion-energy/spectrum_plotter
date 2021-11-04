@@ -1,12 +1,12 @@
 from pathlib import Path
 from typing import Dict, Iterable, Optional, Tuple, Union
 
-import matplotlib.pyplot as plt
 import numpy as np
 
 import plotly.graph_objects as go
 from numpy import ndarray
 from numpy.lib.function_base import trim_zeros
+import matplotlib.pyplot as plt
 
 
 def plot_spectrum_from_tally(
@@ -113,7 +113,7 @@ def plot_spectrum_from_values(
     filename: Optional[str] = None,
     plotting_package: Optional[str] = "matplotlib",
     trim_zeros: bool = True,
-) -> plt:
+):
     """Plots a stepped line graph with optional shaded region for Y error.
     Intended use for ploting neutron / photon spectra
 
@@ -191,7 +191,13 @@ def add_axis_title_labels(
     """Adds axis labels and the title to the matplot lib or plotlg graph object"""
 
     if plotting_package == "matplotlib":
-        plt.figure(0)
+
+        plt.close()
+        plt.cla()
+        plt.clf()
+        plt.figure(1, clear=True)
+        
+        
         plt.xlabel(x_label)
         plt.ylabel(y_label)
 
@@ -294,14 +300,14 @@ def add_spectra_to_plot(
 
     if plotting_package == "matplotlib":
 
-        plt.step(x, y, where="pre", label=label)
+        figure.step(x, y, where="pre", label=label)
 
         if len(spectra) == 3:
             lower_y = y - y_err
             upper_y = y + y_err
-            plt.fill_between(x, lower_y, upper_y, step="pre", color="k", alpha=0.15)
+            figure.fill_between(x, lower_y, upper_y, step="pre", color="k", alpha=0.15)
 
-        return plt
+        return figure
 
     elif plotting_package == "plotly":
 
