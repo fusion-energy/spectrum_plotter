@@ -196,8 +196,7 @@ def add_axis_title_labels(
         plt.cla()
         plt.clf()
         plt.figure(1, clear=True)
-        
-        
+
         plt.xlabel(x_label)
         plt.ylabel(y_label)
 
