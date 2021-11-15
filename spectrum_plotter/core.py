@@ -1,12 +1,12 @@
 from pathlib import Path
 from typing import Dict, Iterable, Optional, Tuple, Union
 
+import matplotlib.pyplot as plt
 import numpy as np
-
+import openmc_tally_unit_converter as otuc
 import plotly.graph_objects as go
 from numpy import ndarray
 from numpy.lib.function_base import trim_zeros
-import matplotlib.pyplot as plt
 
 
 def plot_spectrum_from_tally(
@@ -66,13 +66,11 @@ def plot_spectrum_from_tally(
         the matplotlib.pyplot or plotly.graph_objects object produced
     """
 
-    import openmc_post_processor as opp
-
     dictionary_of_values = {}
 
     for key, value in spectrum.items():
 
-        x_y_y_err = opp.process_spectra_tally(
+        x_y_y_err = otuc.process_spectra_tally(
             tally=value,
             required_units=required_units,
             required_energy_units=required_energy_units,
