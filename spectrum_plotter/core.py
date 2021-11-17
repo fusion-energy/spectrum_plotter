@@ -20,7 +20,7 @@ def plot_spectrum_from_tally(
     filename: Optional[str] = None,
     plotting_package: Optional[str] = "matplotlib",
     trim_zeros: bool = True,
-    required_units: str = "centimeters / simulated_particle",
+    required_units: str = "centimeters / source_particle",
     required_energy_units: str = "eV",
     source_strength: float = None,
     volume: float = None,
@@ -50,7 +50,7 @@ def plot_spectrum_from_tally(
             should be removed from the plot. This is useful when using standard
             energy groups that go beyond the energy of the particles simulated.
         required_units: The units desired for the Y axis. Defaults to
-            "centimeters / simulated_particle" but supports units identified in
+            "centimeters / source_particle" but supports units identified in
             the Python Pint package. If volume normalisation or source strength
             normalisation are required by the units then these arguments must
             also be provided.
