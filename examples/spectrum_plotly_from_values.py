@@ -22,7 +22,7 @@ test_plot = plot_spectrum_from_values(
     y_scale="linear",
     title="example plot 1",
     plotting_package="plotly",
-    # filename='example_spectra_plotly.png'  # static image export requires kaleido package
+    # filename='example_spectra_plotly.png'  # static png image export requires kaleido package
     filename="example_spectrum_plotly.html",
 )
 
