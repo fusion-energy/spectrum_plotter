@@ -30,7 +30,7 @@ test_plot = plot_spectrum_from_tally(
     title="example plot 1",
     plotting_package="plotly",
     filename="example_spectra_from_tally_plotly.html",
-    required_units="meters / simulated_particle",
+    required_units="meters / source_particle",
 )
 
 test_plot.show()
