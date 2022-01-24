@@ -282,8 +282,6 @@ def add_spectra_to_plot(
 
     # trimming required for spectra energy groups which have one more energy bin
 
-    print('got here xxsfafasokd',trim_zeros)
-
     if len(x) == len(y) + 1:
         x = x[:-1]
 
