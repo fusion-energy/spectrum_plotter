@@ -281,6 +281,9 @@ def add_spectra_to_plot(
         y_err = spectra[2]
 
     # trimming required for spectra energy groups which have one more energy bin
+
+    print('got here xxsfafasokd',trim_zeros)
+
     if len(x) == len(y) + 1:
         x = x[:-1]
 
@@ -309,7 +312,7 @@ def add_spectra_to_plot(
     elif plotting_package == "plotly":
 
         # options are 'linear', 'spline', 'hv', 'vh', 'hvh', 'vhv'
-        shape = "vh"
+        shape = "hv"
 
         # adds a line for the upper stanadard deviation bound
         figure.add_trace(
