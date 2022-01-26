@@ -309,7 +309,7 @@ def add_spectra_to_plot(
     elif plotting_package == "plotly":
 
         # options are 'linear', 'spline', 'hv', 'vh', 'hvh', 'vhv'
-        shape = "vh"
+        shape = "hv"
 
         # adds a line for the upper stanadard deviation bound
         figure.add_trace(
