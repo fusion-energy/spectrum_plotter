@@ -159,6 +159,9 @@ def plot_spectrum_from_values(
             plotting_package=plotting_package,
             figure=figure,
         )
+    # add legend to matplotlib after label names have been set
+    if legend and plotting_package == "matplotlib":
+        figure.legend()
 
     save_plot(plotting_package=plotting_package, filename=filename, figure=figure)
 
@@ -202,9 +205,6 @@ def add_axis_title_labels(
         plt.xscale(x_scale)
 
         plt.title(title)
-
-        if legend:
-            plt.legend()
 
         return plt
 
@@ -311,30 +311,32 @@ def add_spectra_to_plot(
         # options are 'linear', 'spline', 'hv', 'vh', 'hvh', 'vhv'
         shape = "hv"
 
-        # adds a line for the upper stanadard deviation bound
-        figure.add_trace(
-            go.Scatter(
-                mode="lines",
-                x=x,
-                y=y + y_err,
-                line=dict(shape=shape, width=0),
+        if len(spectra) == 3:
+            # adds a line for the upper stanadard deviation bound
+            figure.add_trace(
+                go.Scatter(
+                    mode="lines",
+                    x=x,
+                    y=y + y_err,
+                    name="std. dev. upper",
+                    line=dict(shape=shape, width=0),
+                )
             )
-        )
 
-        # adds a line for the lower stanadard deviation bound
-        figure.add_trace(
-            go.Scatter(
-                mode="lines",
-                x=x,
-                # todo process std dev correction
-                y=y - y_err,
-                name="std. dev.",
-                # options are 'none', 'tozeroy', 'tozerox', 'tonexty', 'tonextx', 'toself', 'tonext'
-                fill="tonextx",
-                fillcolor=f"rgba{(0.2,0.2,0.2, 0.1)}",
-                line=dict(shape=shape, width=0),
+            # adds a line for the lower stanadard deviation bound
+            figure.add_trace(
+                go.Scatter(
+                    mode="lines",
+                    x=x,
+                    # todo process std dev correction
+                    y=y - y_err,
+                    name="std. dev. lower",
+                    # options are 'none', 'tozeroy', 'tozerox', 'tonexty', 'tonextx', 'toself', 'tonext'
+                    fill="tonextx",
+                    fillcolor=f"rgba{(0.2,0.2,0.2, 0.1)}",
+                    line=dict(shape=shape, width=0),
+                )
             )
-        )
 
         # adds a line for the tally result
         figure.add_trace(
