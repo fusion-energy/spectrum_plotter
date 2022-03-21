@@ -9,6 +9,9 @@ A Python package for creating standard plots for neutron / photon / particle spe
 
 # Installation
 
+To make use of this package you wll need OpenMC installed.
+See the instructions [here](https://docs.openmc.org/en/stable/quickinstall.html) for installing OpenMC.
+
 ```bash
 pip install spectrum_plotter
 ```
